@@ -1,0 +1,8 @@
+{
+    "name": "functions-durable-map-reduce-blob-js",
+    "version": "0.0.1",
+    "dependencies": {
+        "azure-storage": "^2.8.2",
+        "durable-functions": "^0.0.3"
+    }
+}

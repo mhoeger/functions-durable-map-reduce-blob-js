@@ -57,3 +57,8 @@ typings/
 # dotenv environment variables file
 .env
 
+# dotnet stuff
+bin/
+obj/
+
+local.settings.json

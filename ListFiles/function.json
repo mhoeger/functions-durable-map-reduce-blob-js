@@ -1,0 +1,10 @@
+{
+    "bindings": [
+      {
+        "name": "containerName",
+        "type": "activityTrigger",
+        "direction": "in"
+      }
+    ],
+    "disabled": false
+  }
