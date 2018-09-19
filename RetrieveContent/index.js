@@ -1,7 +1,6 @@
-const storage = require("azure-storage");
+const blobService = require("../services/storage");
 
 module.exports = function(context, fileName) {
-    const blobService = storage.createBlobService();
     blobService.getBlobToText("out-container", fileName, function (error, text, result, response) {
         if (error) {
             context.done(error);

@@ -1,16 +1,19 @@
 const df = require("durable-functions");
 
 module.exports = df(function*(context) {
-    const textFileNames = yield context.df.callActivityAsync("ListFiles", "out-container");
+    context.log("Begin map reduce orchestrator")
+    const textFileNames = yield context.df.callActivityAsync("listFiles", "out-container");
 
     const tasks = [];
     textFileNames.forEach(fileName => {
-        tasks.push(context.df.callActivityAsync("RetrieveContent", fileName));
+        tasks.push(context.df.callActivityAsync("retrieveContent", fileName));
     });
 
     const completedTasks = yield context.df.Task.all(tasks);
 
-    return calculateMostUsed(completedTasks, 5);
+    let mostUsed = calculateMostUsed(completedTasks, 5);
+    context.log(mostUsed);
+    return mostUsed;
 });
 
 function calculateMostUsed(stickers, count) {

@@ -1,7 +1,7 @@
-const storage = require("azure-storage");
+const blobService = require("../services/storage");
 
 module.exports = function (context, containerName) {
-    const blobService = storage.createBlobService();
+    context.log("Fetching names");
     let blobNames = [];
     function aggregateBlobNames(error, result, callback) {
         if (error) {
