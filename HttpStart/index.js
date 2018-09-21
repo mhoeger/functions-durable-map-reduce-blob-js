@@ -10,6 +10,17 @@ module.exports = function (context, req) {
         InstanceId: id
     }];
 
+    let storageCode = process.env.AzureWebJobsStorageKey;
+    let url = context.req.url.split("/api/")[0];
+
+    let statusEndpoints = {
+        id: id,
+        statusQueryGetUri: `${url}/runtime/webhooks/durabletask/instances/${id}?taskHub=DurableFunctionsHub&connection=Storage&code=${storageCode}`,
+        sendEventPostUri: `${url}/runtime/webhooks/durabletask/instances/${id}?/raiseEvent/{eventName}?taskHub=DurableFunctionsHub&connection=Storage&code=${storageCode}`,
+        terminatePostUri: `${url}/runtime/webhooks/durabletask/instances/${id}/terminate?reason={text}&taskHub=DurableFunctionsHub&connection=Storage&code=${storageCode}`,
+        rewindPostUri: `${url}/runtime/webhooks/durabletask/instances/${id}/rewind?reason={text}&taskHub=DurableFunctionsHub&connection=Storage&code=${storageCode}`
+    }
+
     context.bindings.starter = startArgs;
-    context.done(null, {status: 202, body: id});
+    context.done(null, {status: 202, body: statusEndpoints});
 };

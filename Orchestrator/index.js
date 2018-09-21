@@ -1,4 +1,5 @@
 const df = require("durable-functions");
+const commonWords = ["the", "of", "to", "and", "a", "in", "is", "it", "you", "that"]
 
 module.exports = df(function*(context) {
     context.log.info("Begin map reduce orchestrator");
@@ -14,7 +15,7 @@ module.exports = df(function*(context) {
     const blobContent = yield context.df.Task.all(tasks);
 
     // Analyze content
-    let mostUsed = topUsedWords(blobContent, 5);
+    let mostUsed = topUsedWords(blobContent, 20);
     context.log(mostUsed);
     return mostUsed;
 });
@@ -35,6 +36,7 @@ function topUsedWords(textFiles, topN) {
         sortable.push({ "word": key, "count": wordCounts[key] });
     };
     return sortable
+        .filter((tuple) => !(commonWords.indexOf(tuple.word.toLowerCase()) > -1))
         .sort(sortDescendingByCount)
         .map((tuple) => tuple.word)
         .slice(0, topN);
