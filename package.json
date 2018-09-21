@@ -3,6 +3,8 @@
     "version": "0.0.1",
     "dependencies": {
         "azure-storage": "^2.8.2",
-        "durable-functions": "^0.0.3"
+        "durable-functions": "^0.0.3",
+        "azure-cognitiveservices-textanalytics": "2.0.0",
+        "ms-rest-azure": "2.5.7"
     }
 }

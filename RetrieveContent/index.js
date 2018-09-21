@@ -1,4 +1,5 @@
 const blobService = require("../services/storage");
+const client = require("../services/cognitiveServices");
 
 module.exports = function(context, fileName) {
     blobService.getBlobToText("out-container", fileName, function (error, text, result, response) {

@@ -1,52 +1,46 @@
 const df = require("durable-functions");
 
 module.exports = df(function*(context) {
-    context.log("Begin map reduce orchestrator")
+    context.log.info("Begin map reduce orchestrator");
+    // Get list of files in container
     const textFileNames = yield context.df.callActivityAsync("listFiles", "out-container");
 
+    // Get text content for each file
     const tasks = [];
     textFileNames.forEach(fileName => {
         tasks.push(context.df.callActivityAsync("retrieveContent", fileName));
     });
 
-    const completedTasks = yield context.df.Task.all(tasks);
+    const blobContent = yield context.df.Task.all(tasks);
 
-    let mostUsed = calculateMostUsed(completedTasks, 5);
+    // Analyze content
+    let mostUsed = topUsedWords(blobContent, 5);
     context.log(mostUsed);
     return mostUsed;
 });
 
-function calculateMostUsed(stickers, count) {
-    const counts = [];
-    let tuples = [];
-    stickers.forEach(phrase => {
+function topUsedWords(textFiles, topN) {
+    const wordCounts = {};
+    let sortable = [];
+    // Count words in files
+    textFiles.forEach(phrase => {
         const words = phrase.split(" ").filter((word) => word);
         words.forEach((word) => {
-            if (counts[word]) {
-                counts[word]++;
-            } else {
-                counts[word] = 1;
-            }
+            let count = wordCounts[word];
+            wordCounts[word] = count ? count + 1 : 1;
         });
     });
-    for (const key in counts) {
-        tuples.push({ "word": key, "count": counts[key] });
+    // Sort words by count (descending)
+    for (const key in wordCounts) {
+        sortable.push({ "word": key, "count": wordCounts[key] });
     };
-    tuples = tuples
-        .sort(sortByCountThenNameDescending)
+    return sortable
+        .sort(sortDescendingByCount)
         .map((tuple) => tuple.word)
-        .slice(0, count);
-
-    return tuples;
+        .slice(0, topN);
 }
 
-function sortByCountThenNameDescending(a, b) {
-    if (a.count > b.count) {
-        return -1;
-    }
-    if (a.count < b.count) {
-        return 1;
-    }
-    return 0;
+function sortDescendingByCount(a, b) {
+    return b.count - a.count;
 }
 
